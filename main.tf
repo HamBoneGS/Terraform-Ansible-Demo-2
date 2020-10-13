@@ -31,15 +31,15 @@ resource "digitalocean_droplet" "www-1" {
 ###########
 # hack recommended by Hashi video to get SSH listening
 ###########
-provisioner "remote-exec" {
-  inline = ["sudo apt-get -qq install python -y"]
+  provisioner "remote-exec" {
+    inline = ["sudo apt-get -qq install python -y"]
 
-provisioner "local-exec" {
-  environment {
-    PUBLIC_IP = "${self.ipv4_address}"
-    PRIVATE_IP = "${self.ipv4_address_private}"
+  provisioner "local-exec" {
+    environment {
+      PUBLIC_IP = "${self.ipv4_address}"
+      PRIVATE_IP = "${self.ipv4_address_private}"
+    }
+
+    working_dir = "../Ansible/"
+    command = "ansible-playbook -u root --private_key ${var.ssh_key_private} apache.yml -i '${digitalocean_droplet.www-1.ipv4_address}' "
   }
-
-  working_dir = "../Ansible/"
-  command = "ansible-playbook -u root --private_key ${var.ssh_key_private} apache.yml -i '${digitalocean_droplet.www-1.ipv4_address}' "
-}
