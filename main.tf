@@ -6,7 +6,6 @@ terraform {
     }
   }
 }
-
 variable "do_token" {}
 variable "pvt_key" {}
 
@@ -14,8 +13,9 @@ provider "digitalocean" {
   token = var.do_token
 }
 
-data "digitalocean_ssh_key" "Test1" {
-  name = "Test1"
+data "digitalocean_ssh_key" "twa_key" {
+  name = "twa_key"
+  public_key = file("~/.ssh/id_rsa.pub")
 }
 
 resource "digitalocean_droplet" "www-1" {
@@ -33,6 +33,7 @@ resource "digitalocean_droplet" "www-1" {
 ###########
   provisioner "remote-exec" {
     inline = ["sudo apt-get -qq install python -y"]
+  }
 
   provisioner "local-exec" {
     environment {
@@ -43,3 +44,4 @@ resource "digitalocean_droplet" "www-1" {
     working_dir = "../Ansible/"
     command = "ansible-playbook -u root --private_key ${var.ssh_key_private} apache.yml -i '${digitalocean_droplet.www-1.ipv4_address}' "
   }
+}
