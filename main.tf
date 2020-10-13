@@ -7,6 +7,9 @@ terraform {
   }
 }
 
+variable "do_token" {}
+variable "pvt_key" {}
+
 provider "digitalocean" {
   token = var.do_token
 }
@@ -30,14 +33,6 @@ resource "digitalocean_droplet" "www-1" {
 ###########
 provisioner "remote-exec" {
   inline = ["sudo apt-get -qq install python -y"]
-
-  connection {
-    host = "${self.ipv4_address}"
-    type = "ssh"
-    user = "${var.ssh_user}"
-    private_key = "${file('~/.ssh/id_rsa')}"
-  }
-}
 
 provisioner "local-exec" {
   environment {
